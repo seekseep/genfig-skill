@@ -13,12 +13,16 @@
 ## 特徴
 
 - **SVG 単体・自己完結**。twemoji（カラー絵文字）も Lucide（ラインアイコン）も外部
-  `href` ではなく **インライン**する（`genfig.py` が CDN から取得・キャッシュ・インライン化）。
+  `href` ではなく **インライン**する（`genfig` が CDN から取得・キャッシュ・インライン化）。
   GitHub / Markdown / Astro どこでも描画される。
 - **FigJam 風のデザイントークン**。カラー（8 色相 × 2 段階＋無彩色 4 段階）、
   4 フォントファミリー、段階的フォントスケール、16 種のシェイプ、コネクタを
   UI に 1:1 対応させた API で扱う。
 - **日本語ラベル前提**。日本語フォントを優先指定する。
+- **座標を手で計算しない**。図形は `Node` を返し、線は `link(a, b)` で結ぶ。どの辺から出て
+  どこで止めるか、ラベルで線を切る幅は genfig が計算する。
+- **字の大きさは表示したときの px**。キャンバスが表示幅（既定 720px）より広いと字を拡大して
+  書き出し、`save()` が小さすぎる字・はみ出す字・重なる字を警告する。
 - 依存は Python 標準ライブラリのみ（`urllib` でアイコンを取得）。追加の pip パッケージ不要。
 
 ## インストール（Claude Code のスキルとして）
@@ -43,18 +47,16 @@ sys.path.insert(0, "path/to/genfig-skill")
 from genfig import Canvas
 
 c = Canvas(760, 300)
-c.emoji("1f310", 80, 110, 80)                                       # 🌐 ブラウザ
-c.text(120, 215, "ブラウザ", scale="heading")
-c.emoji("1f5a5", 600, 110, 80)                                      # 🖥️ サーバー
-c.text(640, 215, "サーバー", scale="heading")
-c.connector(190, 120, 565, 120, label="リクエスト", primary=True)   # 往路（濃い）
-c.connector(570, 180, 195, 180, label="レスポンス", primary=False)  # 復路（薄い）
+browser = c.node(150, 150, "ブラウザ", emoji_cp="1f310")   # 🌐
+server  = c.node(610, 150, "サーバー", emoji_cp="1f5a5")   # 🖥️
+c.link(browser, server, label="リクエスト", offset=24)                  # 往路（濃い）
+c.link(server, browser, label="レスポンス", offset=24, primary=False)   # 復路（薄い）
 c.save("out.svg")
 ```
 
 ```sh
 python3 examples/request-response.py    # examples/request-response.svg を生成
-rsvg-convert out.svg -o out.png         # 目視確認用に PNG 化（任意 / SVG レンダラは何でも可）
+rsvg-convert out.svg -w 720 -o out.png  # 表示幅で PNG 化して目視確認（任意 / SVG レンダラは何でも可）
 ```
 
 初回実行時に twemoji / Lucide のアイコンを `jsdelivr` の CDN から取得し、
@@ -65,8 +67,8 @@ rsvg-convert out.svg -o out.png         # 目視確認用に PNG 化（任意 / 
 | パス | 内容 |
 |---|---|
 | `SKILL.md` | スキル本体。生成手順（7 ステップ）と API リファレンス。 |
-| `genfig.py` | `Canvas` と描画プリミティブ。デザイントークンの定義。 |
-| `examples/` | 実例（`request-response.py` とその出力 SVG）。 |
+| `genfig/` | `Canvas` と描画プリミティブ（`canvas.py`）、デザイントークン（`tokens.py`）、コネクタの経路計算など。 |
+| `examples/` | 実例（`request-response.py`）と、コネクタの全パターンの見本（`connectors.py`）。出力 SVG 付き。 |
 | `reference/schemas.md` | イメージスキーマの一覧・認識の手がかり・レイアウト指針。 |
 | `reference/twemoji.md` | よく使う twemoji コードポイント早見表。 |
 

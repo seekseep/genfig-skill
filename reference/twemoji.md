@@ -1,6 +1,6 @@
 # twemoji 早見表
 
-`genfig.py` の `emoji()` は twemoji（メンテ版 fork `jdecked/twemoji`）の SVG を CDN から取得し、
+`genfig` の `emoji()` は twemoji（メンテ版 fork `jdecked/twemoji`）の SVG を CDN から取得し、
 ローカルキャッシュ（`.twemoji-cache/`）した上で図にインラインする。コードポイント（hex）でも
 絵文字文字列でも指定できる。
 
@@ -63,7 +63,7 @@ cloudflare-introduction-handson の図はレクチャーをまたいで次の割
 注意:
 - 「フロント(Pages)」は 🌐（ブラウザと同じ＝Webの顔）。🖥️ はサーバー専用とし二重使いしない。
 - **攻撃者 / bot は 🌐 ではなく ⚠️**。🌐 は正規のブラウザ/フロント専用。攻撃アクターは 👤 ではなく ⚠️ で表し、正規ユーザー(👤)と区別する。
-- リクエスト・レスポンス・fetch は `connector` のラベルで表現する。
+- リクエスト・レスポンス・fetch は `link()` のラベルで表現する。
 
 ## 補足
 
