@@ -286,7 +286,11 @@ class Canvas:
                           fill=PALETTE[color]["text"])
             else:
                 size = font_size(label_scale)
-                self.text(cx, cy + size * CENTER_R, label, scale=label_scale,
+                # 複数行のときは、行のかたまり全体が (cx, cy) の中央に来るよう、
+                # 増えた行の分（行送り 1.45 × 行数-1 の半分）だけ上へずらす
+                lines = str(label).count("\n")
+                self.text(cx, cy + size * CENTER_R - lines * size * 1.45 / 2.0,
+                          label, scale=label_scale,
                           fill=PALETTE[color]["text"])
             n.color = color
             return n
