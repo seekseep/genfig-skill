@@ -289,7 +289,10 @@ class Canvas:
                 # 複数行のときは、行のかたまり全体が (cx, cy) の中央に来るよう、
                 # 増えた行の分（行送り 1.45 × 行数-1 の半分）だけ上へずらす
                 lines = str(label).count("\n")
-                self.text(cx, cy + size * CENTER_R - lines * size * 1.45 / 2.0,
+                # シリンダーは上のフタ（楕円）に文字がかからないよう、
+                # フタの下に見えている胴の中央（フタの高さの半分だけ下）に置く
+                body_shift = geom.cylinder_metrics(w, h)[1] / 2.0 if shape == "cylinder" else 0.0
+                self.text(cx, cy + body_shift + size * CENTER_R - lines * size * 1.45 / 2.0,
                           label, scale=label_scale,
                           fill=PALETTE[color]["text"])
             n.color = color
